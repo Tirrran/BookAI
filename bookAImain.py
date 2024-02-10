@@ -8,11 +8,11 @@ from vosk import Model, KaldiRecognizer
 import json
 import pyaudio
 
-#stable diffusion
+#stable diffusion выбор на чём будет производиться генерация изображения
 pipe = AutoPipelineForText2Image.from_pretrained("stabilityai/sdxl-turbo", torch_dtype=torch.float32, variant="fp16")
 pipe.to("cpu")
 
-#tkinter
+#tkinter интерфейс
 root = tk.Tk()
 root.geometry('800x900+200+100')
 root.title("Книжная панорамма")
@@ -29,9 +29,10 @@ label.image = imageOpen
 label.place(x = -2, y = 100)
 label.config(text=label)
 
-#translator
+#translator переводчик
 translator = Translator(from_lang="ru", to_lang="en")
 
+# функция работы ввода микрофона
 def micro():
     model = Model(r"./vosk-model-small-ru-0.22")
     rec = KaldiRecognizer(model, 16000)
@@ -57,6 +58,7 @@ def micro():
             print(translation)
             generate(translation)
 
+# функция генерации изображения
 def generate(text):
     image_gen = pipe(prompt = text, num_inference_steps=1, guidance_scale=0.0).images[0]
     image_gen.save("./img.png")
@@ -74,7 +76,7 @@ def generate(text):
 t1 = threading.Thread(target=micro, daemon=True)
 t1.join
 
-#tk start button
+#tk start button 
 button = tk.Button(root, text="Старт", command=t1.start, width=10, height=2, font="20")
 button.place(y=30)
 button.pack()
